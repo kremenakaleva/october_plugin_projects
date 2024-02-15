@@ -1,0 +1,24 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    title:
+        label: Title
+        type: text
+        span: auto
+    cover:
+        label: Image
+        span: auto
+        mode: image
+        useCaption: true
+        fileTypes: 'svg,png,jpg'
+        type: fileupload
+    content:
+        label: Content
+        type: richeditor
+        span: full
+    url:
+        label: URL
+        type: text
+        span: auto

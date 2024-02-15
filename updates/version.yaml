@@ -1,0 +1,7 @@
+1.0.1: First version of Projects
+1.0.2:
+   - 'Create projects table'
+   - create_projects_table.php
+1.0.3:
+  - 'Update projects table'
+  - update_projects_table.php
