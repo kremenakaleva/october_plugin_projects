@@ -66,10 +66,7 @@
                             {% set keywords = (lang == 'en') ? record.keywords_en : record.keywords_bg %}
                             {% if keywords %}
                             <div><span class="subinfo">{{'Keywords' |_}}:</span>
-                                {% for key in keywords %}
-                                {{ key }}
-                                {% if not loop.last %},{% endif %}
-                                {% endfor %}
+                                {{ keywords|join(', ')|trim }}
                             </div>
                             {% endif %}
                         </div>

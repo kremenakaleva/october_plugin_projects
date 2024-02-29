@@ -11,7 +11,7 @@ class ProjectsList extends ComponentBase
 {
     public $records;
     public $translator;
-    
+
     public function onRun()
     {
         $this->addJs('/plugins/pensoft/projects/assets/filter.js');
@@ -60,9 +60,9 @@ class ProjectsList extends ComponentBase
     
                     $keywordsField = $locale === 'bg' ? 'keywords_bg' : 'keywords_en';
 
-                    $query->orWhere($keywordsField, 'LIKE', '%' . $term . '%');
+                    $query->orWhere($keywordsField, 'LIKE', '%' . $term . '%');   
                 }
-            }
+            }   
         }
     
         $query->orderBy($sortField, $sortDirection);

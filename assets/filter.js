@@ -28,6 +28,7 @@ $(document).ready(function() {
         loadThrottle: 300,
         noResultsText: 'No results found',
         onChange: function(value) { 
+            console.log(value);
             updateProjectList();
         }
     });

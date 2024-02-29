@@ -37,14 +37,12 @@
             {% endif %}
 
             {% if record.keywords_en.0 %}
-            {% set keywords =  (lang == 'en') ? record.keywords_en : record.keywords_bg %}
-            <div><span class="subinfo">{{'Keywords' |_}}:</span>
-                {% for key in keywords %}
-                {{ key }}
-                {% if not loop.last %},{% endif %}
-                {% endfor %}
-                </div>
+            {% set keywords = (lang == 'en') ? record.keywords_en : record.keywords_bg %}
+            <div><span class="subinfo">{{ 'Keywords' |_ }}:</span>
+                {{ keywords|join(', ')|trim }}
+            </div>
             {% endif %}
+                  
 
             {% if record.content %}
             <div class="section-abstract">
