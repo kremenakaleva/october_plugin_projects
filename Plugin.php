@@ -50,10 +50,9 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
         return [
-            'Pensoft\Projects\Components\MyComponent' => 'myComponent',
+            'Pensoft\Projects\Components\ProjectsList' => 'projects_list',
+            'Pensoft\Projects\Components\ProjectsItem' => 'projects_item',
         ];
     }
 
@@ -64,7 +63,6 @@ class Plugin extends PluginBase
      */
     public function registerPermissions()
     {
-        return []; // Remove this line to activate
 
         return [
             'pensoft.projects.some_permission' => [

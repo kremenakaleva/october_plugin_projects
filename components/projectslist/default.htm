@@ -1,0 +1,87 @@
+<div class="container">
+    <div class="record-search row between-xs around-xs mb-2">
+        <!-- Search Field -->
+        <div class="col-md-12 col-xs-12 search-field mb-1">
+            <select multiple id="searchInput" placeholder="Type to search...">
+                <option value="">Search...</option>
+            </select>
+        </div>
+        
+        <!-- Sort Fields -->
+        <div class="col-md-4 col-xs-12 sort-field mb-1">
+            <div class="row">
+                <div class="col-xs-6">
+                    <select id="sortField">
+                        <option value="title">Title</option>
+                        <option value="start">Start Date</option>
+                        <option value="end">End Date</option>
+                    </select>
+                </div>
+                <div class="col-xs-6">
+                    <select id="sortDirection">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Filter Fields -->
+        <div class="col-md-4 col-xs-12 filter-field mb-1">
+                <a class="clear-dates" id="clearDates"></a>
+                <input type="text" id="startDate" placeholder="Start Date">
+                <span class="">-</span>
+                <input type="text" id="endDate" placeholder="End Date">
+        </div>
+    </div>
+    
+    {% if records.count > 0 %}
+    <div class="projects-records" id="recordsContainer">
+        {% for record in records %}
+        <div class="col-xs-12 project-item">
+            <div class="row">
+                <div class="col-md-3 col-xs-12 img-container">
+                    <a href="/projects/{{record.slug}}">
+                        <img src="{{record.cover.thumb(258, 170, {mode: 'crop'})}}">
+                    </a>
+                </div>
+                <div class="col-md-9 col-xs-12">
+                    <div class="row projects-list-content">
+                        <a href="/projects/{{record.slug}}">
+                            <div class="project-title">
+                                {% if record.tag %}
+                                {{record.tag}}
+                                {% endif %}
+                            </div>
+                        </a>
+                        <div class="project-desc">
+                            {% if record.title %}
+                            <span class="subinfo">{{'Title' |_}}:</span> {{ record.title|slice(0, 255) }}
+                            {% endif %}
+                        </div>
+                        <div class="project-dates">
+                            {% if record.start and record.end %}
+                            <div><span class="subinfo">{{'Project duration' |_}}:</span> {{record.start| date('Y')}} {% if record.end| date('Y') != record.start| date('Y') %} - {{record.end| date('Y')}} {% endif %}</div>
+                            {% endif %}
+                        </div>
+                        <div class="project-keywords">
+                            {% set keywords = (lang == 'en') ? record.keywords_en : record.keywords_bg %}
+                            {% if keywords %}
+                            <div><span class="subinfo">{{'Keywords' |_}}:</span>
+                                {% for key in keywords %}
+                                {{ key }}
+                                {% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="read-more-project"><a class="read-more" href="/projects/{{record.slug}}">{{'Read More' |_}}</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>

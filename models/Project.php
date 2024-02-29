@@ -3,7 +3,8 @@
 use Model;
 use October\Rain\Database\Traits\Sortable;
 use Validator;
-
+use RainLab\Translate\Classes\Translator;
+use \October\Rain\Database\Traits\Sluggable;
 /**
  * Project Model
  */
@@ -11,7 +12,8 @@ class Project extends Model
 {
     use \October\Rain\Database\Traits\Validation;
     use Sortable;
-
+    use Sluggable;
+    
     /**
      * @var string table associated with the model
      */
@@ -36,8 +38,12 @@ class Project extends Model
      * @var array Translatable fields
      */
     public $translatable = [
+        'title',
+        'intro',
+        'partners',
+        'contact',
         'content',
-        'title'
+        'publications',
     ];
 
     /**
@@ -48,7 +54,7 @@ class Project extends Model
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
      */
-    protected $jsonable = [];
+    protected $jsonable = ['keywords_en', 'keywords_bg'];
 
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
@@ -65,8 +71,15 @@ class Project extends Model
      */
     protected $dates = [
         'created_at',
-        'updated_at'
+        'updated_at',
+        'start',
+        'end'
     ];
+
+    /**
+     * @var array Generate slugs for these attributes.
+     */
+    protected $slugs = ['slug' => 'title'];
 
     /**
      * @var array hasOne and other relations
@@ -79,7 +92,8 @@ class Project extends Model
     public $morphOne = [];
     public $morphMany = [];
     public $attachOne = [
-        'cover' => 'System\Models\File'
+        'cover' => 'System\Models\File',
+        'illustration' => 'System\Models\File'
     ];
     public $attachMany = [];
 
@@ -115,5 +129,62 @@ class Project extends Model
                 $model->implement[] = 'RainLab.Translate.Behaviors.TranslatableModel';
             }
         );
+    }
+
+    public static function getKeywordsHighlights()
+    {
+        $translator = Translator::instance();
+        $locale = $translator->getLocale();
+    
+        $keywordsField = $locale === 'bg' ? 'keywords_bg' : 'keywords_en';
+    
+        $allKeywords = Project::all()->pluck($keywordsField)->flatten()->filter(function ($value) {
+            return !is_null($value) && $value !== '';
+        })->unique()->values()->all();
+
+        return array_map(function ($keyword) {
+            return array_map(function ($item) {
+                return ['value' => $item, 'text' => $item];
+            }, explode(',', $keyword));
+        }, $allKeywords);
+    }
+        
+    
+    public static function getUniqueKeywordsOptionsEN()
+    {
+        $allKeywords = [];
+        $projects = self::all(['keywords_en']);
+
+        foreach ($projects as $project) {
+            if (is_string($project->keywords_en)) {
+                $keywords = explode(',', $project->keywords_en);
+            } else {
+                $keywords = $project->keywords_en;
+            }
+
+            $allKeywords = array_merge($allKeywords, $keywords);
+        }
+
+        $uniqueKeywords = array_unique($allKeywords);
+        return array_combine($uniqueKeywords, $uniqueKeywords);
+    }
+
+    public static function getUniqueKeywordsOptionsBG()
+    {
+        $allKeywords = [];
+        $projects = self::all(['keywords_bg']);
+
+        foreach ($projects as $project) {
+            if (is_string($project->keywords_bg)) {
+                $keywords = explode(',', $project->keywords_bg);
+            } else {
+                $keywords = $project->keywords_bg;
+            }
+
+            $allKeywords = array_merge($allKeywords, $keywords);
+        }
+
+        $uniqueKeywords = array_unique($allKeywords);
+        return array_combine($uniqueKeywords, $uniqueKeywords);
     }
 }
