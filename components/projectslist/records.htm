@@ -12,16 +12,14 @@
                 <div class="row projects-list-content">
                     <a href="/projects/{{record.slug}}">
                         <div class="project-title">
-                            {% if record.tag %}
-                            {{record.tag}}
+                            {% if record.title %}
+                                {{record.title}}
+                                {% if record.tag %}
+                                    <div class="project-title">({{record.tag}})</div>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </a>
-                    <div class="project-desc">
-                        {% if record.title %}
-                        <span class="subinfo">{{'Title' |_}}:</span> {{ record.title|slice(0, 255) }}
-                        {% endif %}
-                    </div>
                     <div class="project-dates">
                         {% if record.start and record.end %}
                         <div><span class="subinfo">{{'Project duration' |_}}:</span> {{record.start| date('Y')}} {% if record.end| date('Y') != record.start| date('Y') %} - {{record.end| date('Y')}} {% endif %}</div>
