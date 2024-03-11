@@ -5,6 +5,7 @@ use October\Rain\Database\Traits\Sortable;
 use Validator;
 use RainLab\Translate\Classes\Translator;
 use \October\Rain\Database\Traits\Sluggable;
+use Illuminate\Support\Carbon;
 /**
  * Project Model
  */
@@ -54,7 +55,7 @@ class Project extends Model
     /**
      * @var array jsonable attribute names that are json encoded and decoded from the database
      */
-    protected $jsonable = ['keywords_en', 'keywords_bg'];
+    protected $jsonable = ['keywords_en'];
 
     /**
      * @var array appends attributes to the API representation of the model (ex. toArray())
@@ -76,6 +77,16 @@ class Project extends Model
         'end'
     ];
 
+    public function setKeywordsBgAttribute($value)
+    {
+        $this->attributes['keywords_bg'] = json_encode($value, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function getKeywordsBgAttribute($value)
+    {
+        return json_decode($value, true);
+    }    
+    
     /**
      * @var array Generate slugs for these attributes.
      */
@@ -130,7 +141,7 @@ class Project extends Model
             }
         );
     }
-
+    
     public static function getKeywordsHighlights()
     {
         $translator = Translator::instance();
@@ -149,7 +160,6 @@ class Project extends Model
         }, $allKeywords);
     }
         
-    
     public static function getUniqueKeywordsOptionsEN()
     {
         $allKeywords = [];
@@ -173,18 +183,61 @@ class Project extends Model
     {
         $allKeywords = [];
         $projects = self::all(['keywords_bg']);
-
+    
         foreach ($projects as $project) {
             if (is_string($project->keywords_bg)) {
                 $keywords = explode(',', $project->keywords_bg);
             } else {
                 $keywords = $project->keywords_bg;
             }
-
+    
+            $keywords = is_array($keywords) ? $keywords : [];
+    
             $allKeywords = array_merge($allKeywords, $keywords);
         }
-
+    
         $uniqueKeywords = array_unique($allKeywords);
         return array_combine($uniqueKeywords, $uniqueKeywords);
     }
+
+    public function scopeSearchTerms($query, $searchTerms)
+    {
+        if (!empty($searchTerms) && is_array($searchTerms)) {
+            $translator = Translator::instance();
+            $locale = $translator->getLocale();
+            $keywordsField = $locale === 'bg' ? 'keywords_bg' : 'keywords_en';
+
+            foreach ($searchTerms as $term) {
+                $query->orWhere($keywordsField, 'LIKE', "%{$term}%");
+            }
+        }
+
+        return $query;
+    }
+
+    public function scopeDateRange($query, $startDate, $endDate)
+    {
+        if (!empty($startDate)) {
+            $startOfYear = Carbon::createFromFormat('Y', $startDate)->startOfYear();
+            $query->where('start', '>=', $startOfYear);
+        }
+    
+        if (!empty($endDate)) {
+            $endOfYear = Carbon::createFromFormat('Y', $endDate)->endOfYear();
+            $query->where('end', '<=', $endOfYear);
+        }
+    
+        return $query;
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->where('published', true);
+    }
+
+    public function scopeOrdered($query, $sortField, $sortDirection)
+    {
+        return $query->orderBy($sortField, $sortDirection);
+    }
+
 }

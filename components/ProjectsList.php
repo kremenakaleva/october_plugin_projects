@@ -15,6 +15,8 @@ class ProjectsList extends ComponentBase
     public function onRun()
     {
         $this->addJs('/plugins/pensoft/projects/assets/filter.js');
+        $this->addJs('/plugins/pensoft/projects/assets/yearpicker.js');
+        $this->addCss('/plugins/pensoft/projects/assets/yearpicker.css');
         $this->records = $this->searchRecords();
         $this->translator = Translator::instance();
         $this->page['records'] = $this->records;
@@ -48,35 +50,15 @@ class ProjectsList extends ComponentBase
         $startDate = '', 
         $endDate = ''
     ) {
-        $query = Project::query();
-        
-        if (!empty($searchTerms)) {
-            $searchTerms = is_string($searchTerms) ? json_decode($searchTerms, true) : (array)$searchTerms;
+        $searchTerms = is_string($searchTerms) ? json_decode($searchTerms, true) : (array)$searchTerms;
     
-            foreach ($searchTerms as $term) {
-                if ($term) {
-                    $translator = Translator::instance();
-                    $locale = $translator->getLocale();
-    
-                    $keywordsField = $locale === 'bg' ? 'keywords_bg' : 'keywords_en';
-
-                    $query->orWhere($keywordsField, 'LIKE', '%' . $term . '%');   
-                }
-            }   
-        }
-    
-        $query->orderBy($sortField, $sortDirection);
-    
-        if ($startDate) {
-            $query->whereDate('start', '>=', $startDate);
-        }
-        
-        if ($endDate) {
-            $query->whereDate('end', '<=', $endDate);
-        }
-    
-        return $query->where('published', 'true')->get();
+        return Project::searchTerms($searchTerms)
+            ->dateRange($startDate, $endDate)
+            ->published()
+            ->ordered($sortField, $sortDirection)
+            ->get();
     }
+    
     
     public function onGetKeywords()
     {

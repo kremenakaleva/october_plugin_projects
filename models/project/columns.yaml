@@ -6,6 +6,15 @@ columns:
     id:
         label: ID
         searchable: true
+    tag:
+        label: Acronym
+        searchable: true
     title:
         label: Title
+        searchable: true
+    start:
+        label: Project start
+        searchable: true
+    end:
+        label: Project end
         searchable: true

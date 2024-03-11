@@ -24,11 +24,9 @@ $(document).ready(function() {
         },
         highlight: true,
         sortField: 'text',
-        placeholder: 'Search by keywords...',
         loadThrottle: 300,
         noResultsText: 'No results found',
         onChange: function(value) { 
-            console.log(value);
             updateProjectList();
         }
     });
@@ -38,24 +36,22 @@ $(document).ready(function() {
             updateProjectList();
         }
     });
-    
-    const startDatePicker = flatpickr("#startDate", {
-        dateFormat: "j F, Y",
-        onChange: function(selectedDates, dateStr, instance) {
+
+    $('#startDate').yearpicker({
+        onChange: function(value) {
             updateProjectList();
         }
     });
-    
-    const endDatePicker = flatpickr("#endDate", {
-        dateFormat: "j F, Y",
-        onChange: function(selectedDates, dateStr, instance) {
+
+    $('#endDate').yearpicker({
+        onChange: function(value) {
             updateProjectList();
         }
     });
 
     $('#clearDates').click(function() {
-        startDatePicker.clear();
-        endDatePicker.clear();
+        $('#startDate').val('');
+        $('#endDate').val('');
         updateProjectList();
     });
 
@@ -67,16 +63,31 @@ $(document).ready(function() {
     
 
         $.request('onSearchRecords', {
-            data: { 
+            data: {
                 searchTerms: $('#searchInput').val(),
                 sortField: sortField, 
-                sortDirection: sortDirection ,
+                sortDirection: sortDirection,
                 startDate: startDate,
                 endDate: endDate,
             },
             update: { '@records': '#recordsContainer' }
         });
     }
-
     
+});
+
+$(document).keydown(function(e) {
+    
+    // 191 = /
+    if (e.keyCode === 191) {
+        e.preventDefault();
+        $('#searchInput')[0].selectize.focus();
+    }
+
+    // 27 = esc
+    if (e.keyCode === 27) {
+        e.preventDefault();
+        $('#searchInput')[0].selectize.close();
+        $('#searchInput')[0].selectize.blur();
+    }
 });

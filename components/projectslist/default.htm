@@ -1,9 +1,10 @@
-<div class="container">
-    <div class="record-search row between-xs around-xs mb-2">
+<div class="container-fluid">
+    
+    <div class="record-search row mb-2">
         <!-- Search Field -->
         <div class="col-md-12 col-xs-12 search-field mb-1">
-            <select multiple id="searchInput" placeholder="Type to search...">
-                <option value="">Search...</option>
+            <select multiple id="searchInput">
+                <option value="">{{'Search for keywords...' |_}}</option>
             </select>
         </div>
         
@@ -12,29 +13,32 @@
             <div class="row">
                 <div class="col-xs-6">
                     <select id="sortField">
-                        <option value="title">Title</option>
-                        <option value="start">Start Date</option>
-                        <option value="end">End Date</option>
+                        <option value="title">{{'Title' |_}}</option>
+                        <option value="start">{{'Start Year' |_}}</option>
+                        <option value="end">{{'End Year' |_}}</option>
                     </select>
                 </div>
                 <div class="col-xs-6">
                     <select id="sortDirection">
-                        <option value="asc">Ascending</option>
-                        <option value="desc">Descending</option>
+                        <option value="asc">{{'Ascending' |_}}</option>
+                        <option value="desc">{{'Descending' |_}}</option>
                     </select>
                 </div>
             </div>
         </div>
-    
-        <!-- Filter Fields -->
-        <div class="col-md-4 col-xs-12 filter-field mb-1">
-                <a class="clear-dates" id="clearDates"></a>
-                <input type="text" id="startDate" placeholder="Start Date">
-                <span class="">-</span>
-                <input type="text" id="endDate" placeholder="End Date">
+
+        <!-- Filter Fields  -->
+        <div class="col-md-8 col-xs-12 filter-field mb-1">
+            <div class="row clear-dates">
+                <a id="clearDates">{{'Reset' |_}}</a>
+            </div>       
+            <div class="row">
+                <div class="col-md-6 col-xs-6"><input type="text" id="startDate" placeholder="{{'Start Year' |_}}"></div>
+                <div class="col-md-6 col-xs-6"><input type="text" id="endDate" placeholder="{{'End Year' |_}}"></div>
+            </div>
         </div>
     </div>
-    
+
     {% if records.count > 0 %}
     <div class="projects-records" id="recordsContainer">
         {% for record in records %}
